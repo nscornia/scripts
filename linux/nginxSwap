@@ -1,0 +1,50 @@
+#!/bin/bash
+
+usage(){
+	echo "Toggles commented hostname(s) in the hosts file"
+	echo ""
+	echo "Usage: $0 <hostname> [<hostname> ...]"
+	echo "   ex: $0 my-awesome-ws my-other-ws"
+	exit 1
+}
+
+if [ $# -eq 0 ]; then
+	usage
+fi
+
+arr=( "$@" )
+
+### Aliases for webservice names START
+
+### Aliases for webservice names END 
+
+for item in "${arr[@]}"
+do
+	str=$(grep "127.*$item" /etc/hosts)
+
+    if grep -q "$item" /etc/hosts; then
+        if [[ $str =~ ^# ]]; then
+            # 127.0.0.1 was commented out, this means the other entry is NOT commented out
+
+            # Comment out all of the matches
+            # sudo sed -i "/$item/ s/^#*/#/" /etc/hosts
+            # Uncomment the localhost match
+            # sudo sed -i "/^#.*127.*$item /s/^#//" /etc/hosts
+
+            echo "$item is set to localhost environment"
+        else
+            # 127.0.0.1 was NOT commented out, this means the other entry is commented out
+
+            # Uncomment all of the matches
+            # sudo sed -i "/^#.*$item /s/^#//" /etc/hosts
+            # Comment out the localhost match
+            # sudo sed -i "/127.*$item/ s/^#*/#/" /etc/hosts
+
+            echo "$item is set to dev environment"
+        fi
+    else
+        echo "***** $item NOT FOUND"
+    fi
+done
+
+# sudo service nginx restart
